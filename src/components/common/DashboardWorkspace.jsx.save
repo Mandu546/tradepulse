@@ -1,0 +1,94 @@
+function DashboardWorkspace() {
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "20px",
+      }}
+    >
+      {/* Top Cards */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: "20px",
+       
+        }}
+      >
+        <div
+          style=           background: "#1e293b"            padding: "20px",
+            borderRadius: "10px",
+           boxShadow: "0 0 10px rgba(0,0,0,0.2)"
+          }}
+        >
+          <h3>Total Trades</h3>
+          <h1>0</h1>
+        </div>
+
+        <div
+          style={{
+           background: "#1e293b"
+            padding: "20px",
+            borderRadius: "10px",
+            boxShadow: "0 0 10px rgba(0,0,0,0.2)"
+          }}
+        >
+          <h3>Win Rate</h3>
+          <h1>0%</h1>
+        </div>
+
+        <div
+          style={{
+          background: "#1e293b"
+            padding: "20px",
+            borderRadius: "10px",
+           boxShadow: "0 0 10px rgba(0,0,0,0.2)"  
+         }}
+        >
+          <h3>Profit/Loss</h3>
+          <h1>$0</h1>
+        </div>
+      </div>
+
+      {/* Watchlist */}
+      <div
+        style={{
+         background: "#1e293b"
+          padding: "20px",
+          borderRadius: "10px",
+         boxShadow: "0 0 10px rgba(0,0,0,0.2)"       
+ }}
+      >
+        <h2>Watchlist</h2>
+
+        <br />
+
+        <p>Volatility 10 Index</p>
+        <p>Volatility 25 Index</p>
+        <p>Volatility 50 Index</p>
+        <p>Volatility 75 Index</p>
+        <p>Volatility 100 Index</p>
+      </div>
+
+      {/* Recent Activity */}
+      <div
+        style={{
+        background: "#1e293b"
+          padding: "20px",
+          borderRadius: "10px",
+          boxShadow: "0 0 10px rgba(0,0,0,0.2)"
+        }}
+      >
+        <h2>Recent Activity</h2>
+
+        <br />
+
+        <p>No trades yet</p>
+      </div>
+    </div>
+  );
+}
+
+export default DashboardWorkspace;
+

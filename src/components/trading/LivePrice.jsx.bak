@@ -1,0 +1,35 @@
+import { useEffect, useState } from "react";
+import {
+  connectDeriv,
+  disconnectDeriv,
+} from "../../services/deriv/derivWebSocket";
+
+function LivePrice() {
+  const [price, setPrice] = useState("Loading...");
+
+  useEffect(() => {
+    connectDeriv((quote) => {
+      setPrice(quote);
+    });
+
+    return () => {
+      disconnectDeriv();
+    };
+  }, []);
+
+  return (
+    <div
+      style={{
+        background: "#1e293b",
+        padding: "15px",
+        borderRadius: "10px",
+      }}
+    >
+      <h3>Volatility 75</h3>
+
+      <h1>{price}</h1>
+    </div>
+  );
+}
+
+export default LivePrice;
