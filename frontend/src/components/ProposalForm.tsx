@@ -7,7 +7,7 @@ interface ProposalFormProps {
   proposal: ProposalResponse | null;
   isLoading: boolean;
   onRequestProposal: (params: any) => void;
-  onBuy: (proposalId: string, price: number) => Promise<void>;
+  onBuy: (proposalId: string, price: number) => Promise<any>;
   onClearProposal: () => void;
 }
 export default function ProposalForm({ symbol, currency, proposal, isLoading, onRequestProposal, onBuy, onClearProposal }: ProposalFormProps) {
@@ -25,7 +25,7 @@ export default function ProposalForm({ symbol, currency, proposal, isLoading, on
     }, 600);
     return () => clearTimeout(t);
   }, [symbol, amount, duration, durationUnit, basis, currency]);
-  const handleBuy = async (contractType: 'CALL'|'PUT') => {
+  const handleBuy = async () => {
     if (!proposal) return;
     setIsBuying(true); setBuyError(''); setBuySuccess('');
     try {
@@ -83,11 +83,11 @@ export default function ProposalForm({ symbol, currency, proposal, isLoading, on
       {buyError && <div className="trade-error">⚠ {buyError}</div>}
       {buySuccess && <div className="trade-success">{buySuccess}</div>}
       <div className="buy-buttons">
-        <button className="btn buy-up" disabled={!proposal||isBuying||isLoading} onClick={()=>handleBuy('CALL')}>
+        <button className="btn buy-up" disabled={!proposal||isBuying||isLoading} onClick={()=>handleBuy()}>
           {isBuying?<span className="animate-spin">↻</span>:'▲'}
           <span><div>RISE</div><div className="buy-sub">{proposal?`${proposal.ask_price} ${currency}`:'—'}</div></span>
         </button>
-        <button className="btn buy-down" disabled={!proposal||isBuying||isLoading} onClick={()=>handleBuy('PUT')}>
+        <button className="btn buy-down" disabled={!proposal||isBuying||isLoading} onClick={()=>handleBuy()}>
           {isBuying?<span className="animate-spin">↻</span>:'▼'}
           <span><div>FALL</div><div className="buy-sub">{proposal?`${proposal.ask_price} ${currency}`:'—'}</div></span>
         </button>

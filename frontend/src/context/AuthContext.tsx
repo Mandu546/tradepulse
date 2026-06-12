@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { DerivAccount } from '../types/deriv';
 import { checkAuthStatus, fetchAccounts, logout as apiLogout } from '../services/api';
 
