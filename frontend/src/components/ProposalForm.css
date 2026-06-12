@@ -1,0 +1,22 @@
+.proposal-form{display:flex;flex-direction:column;gap:16px}
+.pf-title{font-family:var(--font-display);font-size:15px;font-weight:600}
+.pf-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.proposal-preview{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px;min-height:80px}
+.proposal-loading{display:flex;align-items:center;gap:8px;color:var(--text-muted);font-size:13px;justify-content:center;padding:12px 0}
+.proposal-placeholder{text-align:center;color:var(--text-muted);font-size:13px;padding:12px 0}
+.pp-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-bottom:1px solid rgba(30,45,74,0.5)}
+.pp-row:last-of-type{border-bottom:none}
+.pp-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.4px}
+.pp-value{font-size:13px;font-weight:600;color:var(--text-primary)}
+.pp-value.green{color:var(--accent-green)}
+.pp-longcode{margin-top:8px;font-size:11px;color:var(--text-muted);line-height:1.5;font-style:italic}
+.buy-buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.buy-up{background:linear-gradient(135deg,#006b50,#00d4a1);color:white;font-weight:700;padding:14px;font-size:15px;gap:10px;border-radius:var(--radius);border:none;transition:all 0.15s;display:flex;align-items:center;justify-content:center}
+.buy-up:hover:not(:disabled){background:linear-gradient(135deg,#008060,#00efb5);box-shadow:0 4px 20px rgba(0,212,161,0.4);transform:translateY(-1px)}
+.buy-down{background:linear-gradient(135deg,#7a0022,#ff4d6a);color:white;font-weight:700;padding:14px;font-size:15px;gap:10px;border-radius:var(--radius);border:none;transition:all 0.15s;display:flex;align-items:center;justify-content:center}
+.buy-down:hover:not(:disabled){background:linear-gradient(135deg,#9a0030,#ff6680);box-shadow:0 4px 20px rgba(255,77,106,0.4);transform:translateY(-1px)}
+.buy-up:disabled,.buy-down:disabled{opacity:0.4;transform:none;box-shadow:none}
+.buy-sub{font-size:11px;font-weight:400;opacity:0.85;font-family:var(--font-mono)}
+.trade-error{background:var(--accent-red-dim);border:1px solid rgba(255,77,106,0.3);border-radius:6px;padding:8px 12px;font-size:12px;color:var(--accent-red)}
+.trade-success{background:var(--accent-green-dim);border:1px solid rgba(0,212,161,0.3);border-radius:6px;padding:8px 12px;font-size:12px;color:var(--accent-green)}
+.trade-disclaimer{font-size:11px;color:var(--text-muted);text-align:center}

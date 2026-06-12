@@ -1,0 +1,23 @@
+.navbar{height:56px;background:var(--bg-secondary);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:100;flex-shrink:0}
+.nav-left{display:flex;align-items:center;gap:32px}
+.nav-logo{font-family:var(--font-display);font-size:18px;font-weight:700;letter-spacing:-0.5px;white-space:nowrap}
+.nav-logo .d{color:var(--accent-green)}.nav-logo .pulse{color:var(--accent-red)}
+.nav-links{display:flex;gap:4px}
+.nav-link{padding:5px 12px;border-radius:6px;font-size:13px;font-weight:500;color:var(--text-muted);cursor:pointer;transition:all 0.15s}
+.nav-link:hover{color:var(--text-primary);background:var(--bg-card)}
+.nav-link.active{color:var(--accent-green);background:var(--accent-green-dim)}
+.nav-right{display:flex;align-items:center;gap:14px}
+.nav-balance{display:flex;flex-direction:column;align-items:flex-end;line-height:1.2}
+.balance-label{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px}
+.balance-value{font-size:14px;font-weight:700;color:var(--accent-green)}
+.account-badge{display:flex;align-items:center;gap:6px;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:12px;font-weight:500;color:var(--text-secondary)}
+.ws-status{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
+.ws-dot{width:7px;height:7px;border-radius:50%}
+.ws-connected .ws-dot{background:var(--accent-green);animation:pulse-dot 2s infinite}
+.ws-connecting .ws-dot{background:var(--accent-yellow);animation:pulse-dot 0.8s infinite}
+.ws-disconnected .ws-dot,.ws-error .ws-dot{background:var(--accent-red)}
+.ws-connected .ws-label{color:var(--accent-green)}
+.ws-connecting .ws-label{color:var(--accent-yellow)}
+.ws-disconnected .ws-label,.ws-error .ws-label{color:var(--accent-red)}
+.nav-logout{padding:6px 14px;font-size:12px}
+@media(max-width:900px){.nav-links{display:none}.nav-balance{display:none}}
