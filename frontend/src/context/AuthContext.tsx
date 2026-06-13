@@ -15,6 +15,17 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
+function normalizeAccounts(data: any): DerivAccount[] {
+  const list = Array.isArray(data) ? data : data?.data || data?.accounts || [];
+  return list.map((a: any) => ({
+    account_id: a.account_id || a.id || a.loginid || '',
+    account_type: a.account_type || (a.is_virtual ? 'demo' : 'real'),
+    currency: a.currency || 'USD',
+    balance: typeof a.balance === 'number' ? a.balance : parseFloat(a.balance) || 0,
+    is_active: a.is_active,
+  }));
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -31,13 +42,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setToken(urlToken);
         window.history.replaceState({}, '', window.location.pathname);
       }
-      const authenticated = await checkAuthStatus();
-      setIsAuthenticated(authenticated);
-      if (authenticated) {
+      const hasToken = !!getToken();
+      if (hasToken) {
+        setIsAuthenticated(true);
         try {
-          const accs = await fetchAccounts();
-          setAccounts(accs);
-        } catch {}
+          const raw = await fetchAccounts();
+          const normalized = normalizeAccounts(raw);
+          setAccounts(normalized);
+        } catch (e) {
+          console.error('Failed to fetch accounts:', e);
+        }
+      } else {
+        setIsAuthenticated(false);
       }
     } catch {
       setIsAuthenticated(false);
