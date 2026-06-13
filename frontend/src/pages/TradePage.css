@@ -1,52 +1,51 @@
 .trade-root{height:100vh;display:flex;flex-direction:column;overflow:hidden;background:var(--bg-primary)}
 .trade-body{flex:1;display:grid;grid-template-columns:220px 1fr;overflow:hidden;min-height:0}
 .trade-sidebar{border-right:1px solid var(--border);overflow:hidden;display:flex;flex-direction:column;background:var(--bg-secondary)}
-.trade-main{overflow-y:auto;display:flex;flex-direction:column}
+.trade-main{overflow-y:auto;display:flex;flex-direction:column;min-height:0}
 .mobile-tabs{display:none}
-
-.trade-panels{display:grid;grid-template-columns:1fr 300px;gap:0;flex:1}
+.trade-panels{display:grid;grid-template-columns:1fr 320px;flex:1;min-height:0}
 .trade-panels .panel-chart{padding:20px;display:flex;flex-direction:column;gap:16px;overflow-y:auto}
 .trade-panels .panel-trade{border-left:1px solid var(--border);overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px;background:var(--bg-secondary)}
-
 .symbol-header{display:flex;align-items:center;justify-content:space-between}
 .sym-title{font-family:var(--font-display);font-size:18px;font-weight:700;line-height:1.2}
 .sym-market{font-size:11px;color:var(--text-muted);display:block}
 .sym-live-price{display:flex;align-items:center;gap:10px}
 .live-price-val{font-size:28px;font-weight:700;letter-spacing:-1px;transition:color 0.2s}
 
-.balance-widget{text-align:center;padding:16px;background:linear-gradient(135deg,var(--bg-card),rgba(0,212,161,0.05));border-color:rgba(0,212,161,0.2)}
-.bw-label{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
-.bw-value{font-size:26px;font-weight:700;color:var(--accent-green);line-height:1.1}
-.bw-currency{font-size:12px;color:var(--text-muted);margin-bottom:8px}
-.bw-status{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
+.balance-widget{padding:14px;border-color:rgba(0,212,161,0.2)}
+.bw-top{display:flex;align-items:flex-start;justify-content:space-between}
+.bw-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.bw-label{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px}
+.bw-value{font-size:24px;font-weight:700;color:var(--accent-green);line-height:1.1}
+.bw-currency{font-size:11px;color:var(--text-muted)}
+.bw-status{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;padding:3px 8px;border-radius:20px;background:var(--bg-input)}
 .bw-status.connected{color:var(--accent-green)}.bw-status.connected .ws-dot{background:var(--accent-green);animation:pulse-dot 2s infinite}
 .bw-status.connecting{color:var(--accent-yellow)}.bw-status.connecting .ws-dot{background:var(--accent-yellow)}
 .bw-status.disconnected,.bw-status.error{color:var(--accent-red)}.bw-status.disconnected .ws-dot,.bw-status.error .ws-dot{background:var(--accent-red)}
-.auth-connecting{display:flex;align-items:center;gap:8px;justify-content:center;font-size:13px;color:var(--text-muted);padding:14px}
+.ws-dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+.bw-reset{padding:4px 10px;font-size:11px;color:var(--accent-blue);border-color:var(--accent-blue)}
 
-.stepper-input{display:flex;align-items:center;gap:0}
-.stepper-input input{text-align:center;border-radius:0;flex:1;min-width:0}
-.stepper-input button{width:36px;height:36px;background:var(--bg-card);border:1px solid var(--border);color:var(--text-primary);font-size:16px;cursor:pointer;flex-shrink:0;transition:background 0.15s}
-.stepper-input button:first-child{border-radius:var(--radius) 0 0 var(--radius)}
-.stepper-input button:last-child{border-radius:0 var(--radius) var(--radius) 0}
+.auth-connecting{display:flex;align-items:center;gap:8px;justify-content:center;font-size:13px;color:var(--text-muted);padding:14px;border-radius:var(--radius);background:var(--bg-card);border:1px solid var(--border)}
+
+.stepper-input{display:flex;align-items:center}
+.stepper-input input{text-align:center;border-radius:0;flex:1;min-width:0;font-size:16px;height:44px}
+.stepper-input button{width:44px;height:44px;background:var(--bg-card);border:1px solid var(--border);color:var(--text-primary);font-size:18px;cursor:pointer;flex-shrink:0;transition:background 0.15s;font-family:var(--font-body)}
+.stepper-input button:first-child{border-radius:var(--radius) 0 0 var(--radius);border-right:none}
+.stepper-input button:last-child{border-radius:0 var(--radius) var(--radius) 0;border-left:none}
 .stepper-input button:hover{background:var(--bg-card-hover)}
 
 .mobile-sticky-bar{display:none}
 
-@media(max-width:1100px){
-  .trade-panels{grid-template-columns:1fr 260px}
-}
-
+@media(max-width:1100px){.trade-panels{grid-template-columns:1fr 280px}}
 @media(max-width:768px){
   .trade-body{grid-template-columns:1fr}
   .trade-sidebar{display:none}
-  .trade-main{overflow:visible}
-  .trade-panels{grid-template-columns:1fr;grid-template-rows:auto auto}
+  .trade-panels{grid-template-columns:1fr}
   .trade-panels .panel-trade{border-left:none;border-top:1px solid var(--border)}
   .trade-panels.chart .panel-trade{display:none}
   .trade-panels.trade .panel-chart{display:none}
   .mobile-tabs{display:flex;border-bottom:1px solid var(--border);background:var(--bg-secondary)}
-  .mobile-tabs button{flex:1;padding:12px;background:transparent;border:none;color:var(--text-muted);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-body);transition:all 0.15s;border-bottom:2px solid transparent}
+  .mobile-tabs button{flex:1;padding:12px;background:transparent;border:none;color:var(--text-muted);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-body);border-bottom:2px solid transparent;transition:all 0.15s}
   .mobile-tabs button.active{color:var(--accent-green);border-bottom-color:var(--accent-green)}
   .mobile-sticky-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--bg-secondary);border-top:1px solid var(--border);gap:12px}
   .sticky-symbol{font-size:12px;color:var(--text-secondary);font-weight:500}

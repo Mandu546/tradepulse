@@ -24,7 +24,7 @@ export default function TradePage() {
   const {
     status: authStatus, balance, portfolio, openContracts,
     proposal, isProposalLoading, requestProposal, buyContract,
-    clearProposal, refreshPortfolio,
+    clearProposal, refreshPortfolio, resetBalance,
   } = useAuthWS(authWsUrl);
 
   useEffect(() => {
@@ -35,9 +35,10 @@ export default function TradePage() {
 
   useEffect(() => {
     if (currentTick?.quote !== undefined) {
-      const str = currentTick.quote.toFixed(selectedPip < 0.001 ? 3 : 2);
+      const pip = selectedPip < 0.001 ? 3 : selectedPip < 0.01 ? 2 : selectedPip < 0.1 ? 1 : 0;
+      const str = currentTick.quote.toFixed(pip + 1);
       const digit = parseInt(str[str.length - 1]);
-      setLastDigit(digit);
+      if (!isNaN(digit)) setLastDigit(digit);
     }
   }, [currentTick]);
 
@@ -55,6 +56,8 @@ export default function TradePage() {
   const priceColor = tickHistory.length >= 2
     ? (tickHistory[tickHistory.length-1].quote >= tickHistory[tickHistory.length-2].quote ? '#00d4a1' : '#ff4d6a')
     : '#7a8ba8';
+
+  const isDemo = selectedAccount?.account_type === 'demo';
 
   return (
     <div className="trade-root">
@@ -91,17 +94,39 @@ export default function TradePage() {
             </div>
 
             <div className="panel-trade">
-              {balance && (
-                <div className="balance-widget card">
-                  <div className="bw-label">Balance</div>
-                  <div className="bw-value mono">{balance.balance.toFixed(2)}</div>
-                  <div className="bw-currency">{balance.currency}</div>
-                  <div className={`bw-status ${authStatus}`}><span className="ws-dot" />{authStatus==='connected'?'Connected':authStatus}</div>
+              <div className="balance-widget card">
+                <div className="bw-top">
+                  <div>
+                    <div className="bw-label">Account Balance</div>
+                    <div className="bw-value mono">{balance ? balance.balance.toFixed(2) : '—'}</div>
+                    <div className="bw-currency">{balance?.currency || currency}</div>
+                  </div>
+                  <div className="bw-right">
+                    <div className={`bw-status ${authStatus}`}>
+                      <span className="ws-dot"/>
+                      {authStatus === 'connected' ? 'Live' : authStatus}
+                    </div>
+                    {isDemo && (
+                      <button className="btn btn-ghost bw-reset" onClick={resetBalance} title="Reset demo balance">
+                        ↺ Reset
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {!authWsUrl && (
+                <div className="auth-connecting card">
+                  <span>⚠</span><span>Not connected. Go back and select an account.</span>
                 </div>
               )}
-              {!authWsUrl && (
-                <div className="auth-connecting card"><span>⚠</span><span>No authenticated WS. Go back to account select.</span></div>
+
+              {authWsUrl && authStatus !== 'connected' && (
+                <div className="auth-connecting card">
+                  <span className="animate-spin">↻</span><span>Connecting to trading server…</span>
+                </div>
               )}
+
               <ProposalForm
                 symbol={selectedSymbol}
                 currency={currency}
