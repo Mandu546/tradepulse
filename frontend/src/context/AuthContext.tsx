@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { DerivAccount } from '../types/deriv';
 import { checkAuthStatus, fetchAccounts, logout as apiLogout } from '../services/api';
 
@@ -28,9 +28,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const authenticated = await checkAuthStatus();
       setIsAuthenticated(authenticated);
       if (authenticated) {
-        try { const accs = await fetchAccounts(); setAccounts(accs); } catch {}
+        try {
+          const accs = await fetchAccounts();
+          setAccounts(accs);
+        } catch {}
       }
-    } finally { setIsLoading(false); }
+    } catch {
+      setIsAuthenticated(false);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => { refreshAuth(); }, []);
