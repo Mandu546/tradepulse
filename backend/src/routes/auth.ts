@@ -3,8 +3,8 @@ import axios from 'axios';
 import { generateCodeVerifier, generateCodeChallenge, generateState } from '../services/pkce';
 
 const router = Router();
-const DERIV_AUTH_URL = 'https://oauth.deriv.com/oauth2/authorize';
-const DERIV_TOKEN_URL = 'https://oauth.deriv.com/oauth2/token';
+const DERIV_AUTH_URL = 'https://auth.deriv.com/oauth2/auth';
+const DERIV_TOKEN_URL = 'https://auth.deriv.com/oauth2/token';
 
 router.get('/login', (req: Request, res: Response) => {
   const clientId = process.env.DERIV_CLIENT_ID;
@@ -21,7 +21,7 @@ router.get('/login', (req: Request, res: Response) => {
     response_type: 'code',
     client_id: clientId,
     redirect_uri: redirectUri,
-    scope: 'read trade',
+    scope: 'trade',
     state,
     code_challenge: codeChallenge,
     code_challenge_method: 'S256',
