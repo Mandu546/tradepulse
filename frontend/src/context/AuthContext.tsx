@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { DerivAccount } from '../types/deriv';
-import { checkAuthStatus, fetchAccounts, logout as apiLogout } from '../services/api';
+import { checkAuthStatus, fetchAccounts, logout as apiLogout, setToken, getToken } from '../services/api';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -25,6 +25,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refreshAuth = async () => {
     setIsLoading(true);
     try {
+      const params = new URLSearchParams(window.location.search);
+      const urlToken = params.get('token');
+      if (urlToken) {
+        setToken(urlToken);
+        window.history.replaceState({}, '', window.location.pathname);
+      }
       const authenticated = await checkAuthStatus();
       setIsAuthenticated(authenticated);
       if (authenticated) {
