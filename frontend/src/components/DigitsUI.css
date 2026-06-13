@@ -1,0 +1,41 @@
+.digits-ui { display: flex; flex-direction: column; gap: 14px; }
+
+.digit-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px; }
+
+.last-digit-row { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; }
+
+.last-digit-display {
+  font-family: var(--font-mono); font-size: 40px; font-weight: 700;
+  color: var(--accent-green); text-align: center; margin: 8px 0;
+}
+
+.digit-track {
+  display: flex; gap: 3px; align-items: flex-end; height: 40px;
+}
+
+.digit-bar {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  gap: 2px; height: 100%;
+}
+
+.digit-bar-fill {
+  width: 100%; background: var(--border-bright); border-radius: 2px 2px 0 0;
+  transition: background 0.2s;
+}
+
+.digit-bar.active .digit-bar-fill { background: var(--accent-green); }
+
+.digit-bar-label { font-size: 9px; color: var(--text-muted); font-family: var(--font-mono); }
+
+.digit-picker { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; }
+
+.digit-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+
+.digit-btn {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 6px; padding: 8px; font-family: var(--font-mono);
+  font-size: 14px; font-weight: 600; color: var(--text-secondary);
+  cursor: pointer; transition: all 0.15s; min-height: 44px;
+}
+.digit-btn:hover { border-color: var(--border-bright); color: var(--text-primary); }
+.digit-btn.active { background: var(--accent-green-dim); border-color: var(--accent-green); color: var(--accent-green); }

@@ -1,0 +1,27 @@
+.contract-selector { display: flex; flex-direction: column; gap: 10px; }
+
+.category-tabs {
+  display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none;
+  padding-bottom: 2px;
+}
+.category-tabs::-webkit-scrollbar { display: none; }
+
+.cat-tab {
+  background: transparent; border: 1px solid var(--border);
+  border-radius: 6px; padding: 5px 10px; font-size: 11px;
+  color: var(--text-muted); cursor: pointer; white-space: nowrap;
+  font-family: var(--font-body); transition: all 0.15s;
+}
+.cat-tab:hover { color: var(--text-primary); border-color: var(--border-bright); }
+.cat-tab.active { background: var(--accent-blue-dim); border-color: var(--accent-blue); color: var(--accent-blue); }
+
+.type-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.type-pill {
+  background: var(--bg-input); border: 1px solid var(--border);
+  border-radius: 20px; padding: 4px 12px; font-size: 12px;
+  color: var(--text-secondary); cursor: pointer; font-family: var(--font-body);
+  transition: all 0.15s;
+}
+.type-pill:hover { border-color: var(--border-bright); color: var(--text-primary); }
+.type-pill.active { background: var(--accent-green-dim); border-color: var(--accent-green); color: var(--accent-green); font-weight: 600; }
