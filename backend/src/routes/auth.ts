@@ -6,6 +6,8 @@ const router = Router();
 const DERIV_AUTH_URL = 'https://auth.deriv.com/oauth2/auth';
 const DERIV_TOKEN_URL = 'https://auth.deriv.com/oauth2/token';
 
+const stateStore = new Map<string, { codeVerifier: string; expires: number }>();
+
 router.get('/login', (req: Request, res: Response) => {
   const clientId = process.env.DERIV_CLIENT_ID;
   const redirectUri = process.env.REDIRECT_URI;
@@ -15,8 +17,7 @@ router.get('/login', (req: Request, res: Response) => {
   const codeVerifier = generateCodeVerifier();
   const codeChallenge = generateCodeChallenge(codeVerifier);
   const state = generateState();
-  req.session.codeVerifier = codeVerifier;
-  req.session.oauthState = state;
+  stateStore.set(state, { codeVerifier, expires: Date.now() + 10 * 60 * 1000 });
   const params = new URLSearchParams({
     response_type: 'code',
     client_id: clientId,
@@ -38,13 +39,12 @@ router.get('/callback', async (req: Request, res: Response) => {
   if (!code || !state) {
     return res.redirect(`${frontendUrl}/login?error=missing_params`);
   }
-  if (state !== req.session.oauthState) {
+  const stored = stateStore.get(String(state));
+  if (!stored || stored.expires < Date.now()) {
     return res.redirect(`${frontendUrl}/login?error=state_mismatch`);
   }
-  const codeVerifier = req.session.codeVerifier;
-  if (!codeVerifier) {
-    return res.redirect(`${frontendUrl}/login?error=no_verifier`);
-  }
+  stateStore.delete(String(state));
+  const codeVerifier = stored.codeVerifier;
   try {
     const tokenRes = await axios.post(DERIV_TOKEN_URL, new URLSearchParams({
       grant_type: 'authorization_code',
@@ -55,8 +55,6 @@ router.get('/callback', async (req: Request, res: Response) => {
     }), { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
     const { access_token } = tokenRes.data;
     req.session.accessToken = access_token;
-    req.session.codeVerifier = undefined;
-    req.session.oauthState = undefined;
     return res.redirect(`${frontendUrl}/accounts`);
   } catch (err: any) {
     console.error('Token exchange failed:', err?.response?.data || err.message);
