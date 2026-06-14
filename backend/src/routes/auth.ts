@@ -25,6 +25,7 @@ router.get('/login', (req: Request, res: Response) => {
     state,
     code_challenge: codeChallenge,
     code_challenge_method: 'S256',
+    prompt: 'consent',
   });
   res.json({ url: `${DERIV_AUTH_URL}?${params.toString()}` });
 });
