@@ -47,7 +47,7 @@ export default function ProposalForm({
   const [activeCategory, setActiveCategory] = useState('digits');
   const [contractType, setContractType] = useState('DIGITEVEN');
   const [amount, setAmount] = useState('10');
-  const [duration, setDuration] = useState('1');
+  const [duration, setDuration] = useState('5');
   const [durationUnit, setDurationUnit] = useState('t');
   const [selectedDigit, setSelectedDigit] = useState(5);
   const [isBuying, setIsBuying] = useState(false);
@@ -60,14 +60,12 @@ export default function ProposalForm({
   const isDigits = contractType.startsWith('DIGIT');
   const needsDigitPicker = ['DIGITOVER','DIGITUNDER','DIGITMATCH','DIGITDIFF'].includes(contractType);
 
-  // Compute digit frequencies from history
   const digitFreq = Array.from({length: 10}, (_, i) => {
-    if (digitHistory.length < 5) return null; // don't show until we have data
+    if (digitHistory.length < 10) return null;
     const count = digitHistory.filter(d => d === i).length;
-    return Math.round((count / digitHistory.length) * 100);
+    return (count / digitHistory.length * 100).toFixed(1);
   });
 
-  // Request proposal with debounce
   const triggerProposal = useCallback(() => {
     if (!symbol) return;
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -96,12 +94,7 @@ export default function ProposalForm({
     const cat = CATEGORIES.find(c => c.id === catId)!;
     setContractType(cat.types[0].id);
     onClearProposal();
-    if (catId === 'digits') { setDurationUnit('t'); setDuration('1'); }
-  };
-
-  const handleTypeChange = (typeId: string) => {
-    setContractType(typeId);
-    onClearProposal();
+    if (catId === 'digits') { setDurationUnit('t'); setDuration('5'); }
   };
 
   const handleBuy = async () => {
@@ -109,23 +102,14 @@ export default function ProposalForm({
     const buyId = ++buyCountRef.current;
     setIsBuying(true);
     setStatusMsg('');
-
-    const savedProposal = { ...proposal };
-
+    const saved = { ...proposal };
     try {
-      await onBuy(savedProposal.id, savedProposal.ask_price);
+      await onBuy(saved.id, saved.ask_price);
       if (buyId === buyCountRef.current) {
-        const p = typeof savedProposal.payout === 'number'
-          ? savedProposal.payout.toFixed(2)
-          : savedProposal.payout;
-        setStatusMsg(`✓ Bought! Payout: ${p} ${currency}`);
+        const p = typeof saved.payout === 'number' ? saved.payout.toFixed(2) : saved.payout;
+        setStatusMsg(`Contract bought! Payout: ${p} ${currency}`);
         setStatusOk(true);
-        // Clear message after 3s
-        setTimeout(() => {
-          if (buyId === buyCountRef.current) {
-            setStatusMsg('');
-          }
-        }, 3000);
+        setTimeout(() => { if (buyId === buyCountRef.current) setStatusMsg(''); }, 3000);
       }
     } catch (err: any) {
       if (buyId === buyCountRef.current) {
@@ -133,19 +117,14 @@ export default function ProposalForm({
         setStatusOk(false);
       }
     } finally {
-      if (buyId === buyCountRef.current) {
-        setIsBuying(false);
-        // Proposal auto-refreshes via useAuthWS buyContract
-      }
+      if (buyId === buyCountRef.current) setIsBuying(false);
     }
   };
 
-  const payoutStr = typeof proposal?.payout === 'number'
-    ? proposal.payout.toFixed(2)
-    : '—';
-  const pip = proposal?.spot
-    ? String(proposal.spot).split('.')[1]?.length ?? 2
-    : 2;
+  const payoutStr = typeof proposal?.payout === 'number' ? proposal.payout.toFixed(2) : null;
+  const pip = proposal?.spot ? String(proposal.spot).split('.')[1]?.length ?? 2 : 2;
+  const durLabel = `${duration} ${durationUnit === 't' ? `tick${parseInt(duration) !== 1 ? 's' : ''}` : durationUnit === 's' ? 'sec' : durationUnit === 'm' ? 'min' : durationUnit === 'h' ? 'hr' : 'day'}`;
+  const stakeNum = parseFloat(amount) || 10;
 
   const buyLabel =
     contractType === 'DIGITEVEN' ? 'EVEN' :
@@ -158,8 +137,7 @@ export default function ProposalForm({
     contractType === 'PUT' ? 'FALL' :
     contractType === 'ONETOUCH' ? 'ONE TOUCH' :
     contractType === 'NOTOUCH' ? 'NO TOUCH' :
-    contractType === 'ACCU' ? 'BUY' :
-    contractType;
+    'BUY';
 
   return (
     <div className="pf-root">
@@ -179,13 +157,13 @@ export default function ProposalForm({
         {currentCat.types.map(t => (
           <button key={t.id}
             className={`pf-type-pill ${contractType === t.id ? 'active' : ''}`}
-            onClick={() => handleTypeChange(t.id)}>
+            onClick={() => { setContractType(t.id); onClearProposal(); }}>
             {t.label}
           </button>
         ))}
       </div>
 
-      {/* Digits grid */}
+      {/* Digit grid */}
       {isDigits && (
         <div className="pf-digits-section">
           <div className="pf-field-label">Last digit prediction</div>
@@ -194,26 +172,13 @@ export default function ProposalForm({
               const freq = digitFreq[i];
               const isLast = lastDigit === i;
               const isSelected = needsDigitPicker && selectedDigit === i;
-              const isHot = freq !== null && freq > 11;
-              const isCold = freq !== null && freq < 9 && freq >= 0;
+              const freqNum = freq !== null ? parseFloat(freq) : null;
               return (
                 <button key={i}
-                  className={[
-                    'pf-digit-btn',
-                    isLast ? 'last' : '',
-                    isSelected ? 'selected' : '',
-                  ].join(' ')}
-                  onClick={() => {
-                    if (needsDigitPicker) {
-                      setSelectedDigit(i);
-                      onClearProposal();
-                    }
-                  }}>
+                  className={['pf-digit-btn', isLast ? 'last' : '', isSelected ? 'selected' : ''].join(' ').trim()}
+                  onClick={() => { if (needsDigitPicker) { setSelectedDigit(i); onClearProposal(); } }}>
                   <span className="pf-digit-num">{i}</span>
-                  <span className={[
-                    'pf-digit-freq',
-                    isHot ? 'hot' : isCold ? 'cold' : '',
-                  ].join(' ')}>
+                  <span className={['pf-digit-freq', freqNum !== null && freqNum > 11 ? 'hot' : freqNum !== null && freqNum < 9 ? 'cold' : ''].join(' ').trim()}>
                     {freq !== null ? `${freq}%` : '·'}
                   </span>
                 </button>
@@ -223,66 +188,60 @@ export default function ProposalForm({
         </div>
       )}
 
-      {/* Duration slider for digits */}
-      {isDigits && (
-        <div className="pf-field">
-          <div className="pf-field-label">Duration — {duration} tick{parseInt(duration) !== 1 ? 's' : ''}</div>
-          <input type="range" min="1" max="10" value={duration}
-            onChange={e => { setDuration(e.target.value); onClearProposal(); }}
-            className="pf-range" />
-        </div>
-      )}
-
-      {/* Duration stepper for non-digits */}
-      {!isDigits && (
-        <div className="pf-row">
-          <div className="pf-field pf-flex1">
-            <div className="pf-field-label">Duration</div>
-            <div className="pf-stepper">
-              <button onClick={() => { setDuration(v => String(Math.max(1, parseInt(v)-1))); onClearProposal(); }}>−</button>
-              <input type="number" value={duration} min="1"
-                onChange={e => { setDuration(e.target.value); onClearProposal(); }} />
-              <button onClick={() => { setDuration(v => String(parseInt(v)+1)); onClearProposal(); }}>+</button>
-            </div>
-          </div>
-          <div className="pf-field pf-flex1">
-            <div className="pf-field-label">Unit</div>
-            <select value={durationUnit}
-              onChange={e => { setDurationUnit(e.target.value); onClearProposal(); }}>
-              <option value="t">Ticks</option>
-              <option value="s">Seconds</option>
-              <option value="m">Minutes</option>
-              <option value="h">Hours</option>
-              <option value="d">Days</option>
-            </select>
-          </div>
-        </div>
-      )}
-
-      {/* Stake */}
-      <div className="pf-field">
-        <div className="pf-field-label">Stake</div>
-        <div className="pf-stake-wrap">
-          <div className="pf-stepper pf-stake-stepper">
-            <button onClick={() => { setAmount(v => String(Math.max(1, parseFloat(v)-1))); onClearProposal(); }}>−</button>
-            <input type="number" value={amount} min="1" step="1"
-              onChange={e => { setAmount(e.target.value); onClearProposal(); }} />
-            <button onClick={() => { setAmount(v => String(parseFloat(v)+1)); onClearProposal(); }}>+</button>
-          </div>
-          <span className="pf-currency-label">{currency}</span>
+      {/* Duration — clean display like reference */}
+      <div className="pf-duration-row">
+        <span className="pf-duration-label">Duration</span>
+        <div className="pf-duration-controls">
+          <button className="pf-dur-btn"
+            onClick={() => { setDuration(v => String(Math.max(1, parseInt(v)-1))); onClearProposal(); }}>−</button>
+          <span className="pf-duration-val">{durLabel}</span>
+          <button className="pf-dur-btn"
+            onClick={() => { setDuration(v => String(parseInt(v)+1)); onClearProposal(); }}>+</button>
         </div>
       </div>
 
-      {/* Status message */}
-      {statusMsg && (
-        <div className={`pf-msg ${statusOk ? 'pf-msg-success' : 'pf-msg-error'}`}>
-          {statusMsg}
+      {/* Duration unit for non-digits */}
+      {!isDigits && (
+        <div className="pf-field">
+          <div className="pf-field-label">Duration unit</div>
+          <select value={durationUnit}
+            onChange={e => { setDurationUnit(e.target.value); onClearProposal(); }}>
+            <option value="t">Ticks</option>
+            <option value="s">Seconds</option>
+            <option value="m">Minutes</option>
+            <option value="h">Hours</option>
+            <option value="d">Days</option>
+          </select>
         </div>
       )}
 
+      {/* Stake — clean layout */}
+      <div className="pf-stake-row">
+        <span className="pf-stake-label">Stake</span>
+        <div className="pf-stake-controls">
+          <button className="pf-stake-btn"
+            onClick={() => { setAmount(v => String(Math.max(1, parseFloat(v)-1))); onClearProposal(); }}>−</button>
+          <input
+            className="pf-stake-amount"
+            type="number"
+            value={amount}
+            min="1"
+            step="1"
+            onChange={e => { setAmount(e.target.value); onClearProposal(); }}
+          />
+          <button className="pf-stake-btn"
+            onClick={() => { setAmount(v => String(parseFloat(v)+1)); onClearProposal(); }}>+</button>
+          <span className="pf-stake-currency">{currency}</span>
+        </div>
+      </div>
+
+      {/* Status */}
+      {statusMsg && (
+        <div className={`pf-msg ${statusOk ? 'pf-msg-success' : 'pf-msg-error'}`}>{statusMsg}</div>
+      )}
+
       {/* Buy button */}
-      <button className="pf-buy-btn"
-        onClick={handleBuy}
+      <button className="pf-buy-btn" onClick={handleBuy}
         disabled={!proposal || isBuying || isLoading}>
         {isBuying ? (
           <div className="pf-buy-inner">
@@ -292,22 +251,17 @@ export default function ProposalForm({
           <div className="pf-buy-inner">
             <span className="pf-buy-label">{buyLabel}</span>
             <span className="pf-buy-payout">
-              Payout &nbsp; {isLoading ? '…' : `${payoutStr} ${currency}`}
+              Payout &nbsp; {isLoading ? '…' : payoutStr ? `${payoutStr} ${currency}` : `— ${currency}`}
             </span>
           </div>
         )}
       </button>
 
-      {/* Spot info */}
       {proposal && !isBuying && (
         <div className="pf-spot-info">
-          Spot: <span className="mono">
-            {typeof proposal.spot === 'number' ? proposal.spot.toFixed(pip) : '—'}
-          </span>
+          Spot: <span className="mono">{typeof proposal.spot === 'number' ? proposal.spot.toFixed(pip) : '—'}</span>
           &nbsp;·&nbsp;
-          Ask: <span className="mono">
-            {typeof proposal.ask_price === 'number' ? proposal.ask_price.toFixed(2) : '—'} {currency}
-          </span>
+          Ask: <span className="mono">{typeof proposal.ask_price === 'number' ? proposal.ask_price.toFixed(2) : '—'} {currency}</span>
         </div>
       )}
     </div>
