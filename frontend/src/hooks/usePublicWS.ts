@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { WSManager } from '../services/wsManager';
 import { DerivSymbol, TickData, TickHistoryItem } from '../types/deriv';
 
-const PUBLIC_WS_URL = 'wss://ws.derivws.com/websockets/v3?app_id=33xij47aaMIETwFWI0ILm';
+const PUBLIC_WS_URL = 'wss://ws.derivws.com/websockets/v3?app_id=1089';
 
 export function usePublicWS() {
   const wsRef = useRef<WSManager | null>(null);
