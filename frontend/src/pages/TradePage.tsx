@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { usePublicWS } from '../hooks/usePublicWS';
 import { useAuthWS } from '../hooks/useAuthWS';
@@ -14,6 +14,7 @@ export default function TradePage() {
   const [selectedSymbol, setSelectedSymbol] = useState('1HZ100V');
   const [selectedPip, setSelectedPip] = useState(0.01);
   const [lastDigit, setLastDigit] = useState<number | null>(null);
+  const [digitHistory, setDigitHistory] = useState<number[]>([]);
   const [showMobilePanel, setShowMobilePanel] = useState<'chart'|'trade'>('chart');
 
   const {
@@ -35,10 +36,13 @@ export default function TradePage() {
 
   useEffect(() => {
     if (currentTick?.quote !== undefined) {
-      const pip = selectedPip < 0.001 ? 3 : selectedPip < 0.01 ? 2 : selectedPip < 0.1 ? 1 : 0;
-      const str = currentTick.quote.toFixed(pip + 1);
+      const q = currentTick.quote;
+      const str = q.toFixed(selectedPip <= 0.001 ? 4 : selectedPip <= 0.01 ? 3 : 2);
       const digit = parseInt(str[str.length - 1]);
-      if (!isNaN(digit)) setLastDigit(digit);
+      if (!isNaN(digit)) {
+        setLastDigit(digit);
+        setDigitHistory(prev => [...prev.slice(-499), digit]);
+      }
     }
   }, [currentTick]);
 
@@ -49,6 +53,7 @@ export default function TradePage() {
     subscribeSymbol(symbol);
     clearProposal();
     setLastDigit(null);
+    setDigitHistory([]);
   };
 
   const currency = selectedAccount?.currency || 'USD';
@@ -56,7 +61,6 @@ export default function TradePage() {
   const priceColor = tickHistory.length >= 2
     ? (tickHistory[tickHistory.length-1].quote >= tickHistory[tickHistory.length-2].quote ? '#00d4a1' : '#ff4d6a')
     : '#7a8ba8';
-
   const isDemo = selectedAccount?.account_type === 'demo';
 
   return (
@@ -107,7 +111,7 @@ export default function TradePage() {
                       {authStatus === 'connected' ? 'Live' : authStatus}
                     </div>
                     {isDemo && (
-                      <button className="btn btn-ghost bw-reset" onClick={resetBalance} title="Reset demo balance">
+                      <button className="btn btn-ghost bw-reset" onClick={resetBalance}>
                         ↺ Reset
                       </button>
                     )}
@@ -133,6 +137,7 @@ export default function TradePage() {
                 proposal={proposal}
                 isLoading={isProposalLoading}
                 lastDigit={lastDigit}
+                digitHistory={digitHistory}
                 onRequestProposal={requestProposal}
                 onBuy={buyContract}
                 onClearProposal={clearProposal}
