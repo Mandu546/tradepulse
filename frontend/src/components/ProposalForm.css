@@ -1,5 +1,3 @@
-/* ── ProposalForm.css — DTradePulse Deriv-style panel ── */
-
 .pf {
   display: flex;
   flex-direction: column;
@@ -7,7 +5,6 @@
   min-height: 100%;
 }
 
-/* ── Sections ── */
 .pf-section {
   padding: 14px 16px;
   border-bottom: 1px solid #1f2937;
@@ -22,7 +19,7 @@
   margin-bottom: 8px;
 }
 
-/* ── Contract type dropdown ── */
+/* Dropdown */
 .pf-dropdown {
   width: 100%;
   display: flex;
@@ -32,7 +29,7 @@
   border: 1px solid #1f2937;
   border-radius: 10px;
   padding: 12px 16px;
-  color: #ffffff;
+  color: #fff;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
@@ -49,6 +46,8 @@
   border: 1px solid #1f2937;
   border-radius: 10px;
   overflow: hidden;
+  z-index: 10;
+  position: relative;
 }
 .pf-cat-item {
   width: 100%;
@@ -71,17 +70,17 @@
   font-weight: 600;
 }
 
-/* ── Trade type cards ── */
+/* Trade type cards */
 .pf-type-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
   gap: 8px;
 }
 .pf-type-card {
   background: #111827;
   border: 1.5px solid #1f2937;
   border-radius: 10px;
-  padding: 10px 8px;
+  padding: 10px 6px;
   color: #94a3b8;
   font-size: 13px;
   font-weight: 500;
@@ -94,24 +93,22 @@
   align-items: center;
   justify-content: center;
 }
-.pf-type-card:hover {
-  border-color: #374151;
-  color: #fff;
-  background: #1f2937;
-}
+.pf-type-card:hover { border-color: #374151; color: #fff; background: #1f2937; }
 .pf-type-card.active {
-  background: color-mix(in srgb, var(--type-color, #2563eb) 15%, transparent);
+  background: color-mix(in srgb, var(--type-color, #2563eb) 18%, transparent);
   border-color: var(--type-color, #2563eb);
   color: var(--type-color, #2563eb);
   font-weight: 700;
 }
 
-/* ── Digit prediction grid ── */
+/* Digit grid */
 .pf-digit-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 6px;
+  margin-bottom: 8px;
 }
+
 .pf-digit {
   background: #111827;
   border: 1.5px solid #1f2937;
@@ -122,16 +119,15 @@
   align-items: center;
   gap: 4px;
   cursor: pointer;
-  transition: all 0.12s;
+  transition: all 0.15s;
   min-height: 58px;
   justify-content: center;
+  position: relative;
+  overflow: hidden;
 }
-.pf-digit:disabled { cursor: default; }
-.pf-digit:not(:disabled):hover {
-  background: #1f2937;
-  border-color: #374151;
-}
-/* Last digit — white highlight */
+.pf-digit:hover { background: #1f2937; border-color: #374151; }
+
+/* Last digit — white, pulses */
 .pf-digit--last {
   background: #ffffff !important;
   border-color: #ffffff !important;
@@ -139,18 +135,45 @@
 .pf-digit--last .pf-digit-n { color: #0f172a !important; }
 .pf-digit--last .pf-digit-p { color: #374151 !important; }
 
-/* Selected digit — colored border */
+/* Pulse ring on last digit */
+.pf-digit-pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  border: 2px solid rgba(255,255,255,0.8);
+  animation: digitPulse 0.6s ease-out;
+  pointer-events: none;
+}
+@keyframes digitPulse {
+  0%   { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.3); }
+}
+
+/* Selected (for Over/Under/Match/Differs) */
 .pf-digit--sel {
   border-color: #22c55e !important;
-  background: rgba(34,197,94,0.1) !important;
+  background: rgba(34,197,94,0.12) !important;
 }
-.pf-digit--sel .pf-digit-n { color: #22c55e; }
+.pf-digit--sel .pf-digit-n { color: #22c55e !important; }
+.pf-digit--sel .pf-digit-p { color: #22c55e !important; }
+
+/* Hot digit — green tint */
+.pf-digit--hot {
+  border-color: rgba(34,197,94,0.4) !important;
+}
+.pf-digit--hot .pf-digit-p { color: #22c55e !important; font-weight: 700; }
+
+/* Cold digit — red tint */
+.pf-digit--cold {
+  border-color: rgba(239,68,68,0.4) !important;
+}
+.pf-digit--cold .pf-digit-p { color: #ef4444 !important; }
 
 .pf-digit-n {
   font-family: var(--font-mono, monospace);
   font-size: 18px;
   font-weight: 700;
-  color: #ffffff;
+  color: #fff;
   line-height: 1;
 }
 .pf-digit-p {
@@ -158,11 +181,50 @@
   font-family: var(--font-mono, monospace);
   color: #94a3b8;
   line-height: 1;
+  transition: color 0.3s;
 }
-.pf-digit-p.hot { color: #22c55e; font-weight: 600; }
-.pf-digit-p.cold { color: #ef4444; }
 
-/* ── Row layout for duration ── */
+/* Legend */
+.pf-digit-legend {
+  display: flex;
+  gap: 16px;
+  font-size: 10px;
+  color: #94a3b8;
+}
+.pf-legend-hot { color: #22c55e; }
+.pf-legend-cold { color: #ef4444; }
+
+/* Growth rate / multiplier selector */
+.pf-growth-grid {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.pf-growth-btn {
+  flex: 1;
+  min-width: 44px;
+  padding: 8px 4px;
+  background: #111827;
+  border: 1.5px solid #1f2937;
+  border-radius: 8px;
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+  font-family: var(--font-body);
+  min-height: 40px;
+}
+.pf-growth-btn:hover { background: #1f2937; color: #fff; }
+.pf-growth-btn.active {
+  background: rgba(139,92,246,0.15);
+  border-color: #8b5cf6;
+  color: #8b5cf6;
+  font-weight: 700;
+}
+
+/* Duration row */
 .pf-row2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -171,24 +233,20 @@
 }
 .pf-half { display: flex; flex-direction: column; gap: 6px; }
 
-/* ── Spinner (duration / stake) ── */
 .pf-spinner {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 .pf-spin-btn {
-  width: 36px;
-  height: 36px;
+  width: 36px; height: 36px;
   background: #111827;
   border: 1px solid #1f2937;
   border-radius: 8px;
-  color: #ffffff;
+  color: #fff;
   font-size: 18px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
   transition: background 0.12s;
   font-family: var(--font-body);
@@ -200,17 +258,16 @@
   text-align: center;
   font-size: 14px;
   font-weight: 600;
-  color: #ffffff;
+  color: #fff;
   white-space: nowrap;
 }
 
-/* ── Select ── */
 .pf-select {
   width: 100%;
   background: #111827;
   border: 1px solid #1f2937;
   border-radius: 8px;
-  color: #ffffff;
+  color: #fff;
   padding: 8px 10px;
   font-size: 14px;
   font-family: var(--font-body);
@@ -221,24 +278,21 @@
 .pf-select:focus { border-color: #374151; }
 .pf-select option { background: #111827; }
 
-/* ── Stake ── */
+/* Stake */
 .pf-stake {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 .pf-stake-btn {
-  width: 40px;
-  height: 44px;
+  width: 40px; height: 44px;
   background: #111827;
   border: 1px solid #1f2937;
   border-radius: 8px;
-  color: #ffffff;
+  color: #fff;
   font-size: 20px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
   transition: background 0.12s;
   font-family: var(--font-body);
@@ -246,8 +300,7 @@
 }
 .pf-stake-btn:hover { background: #1f2937; }
 .pf-stake-input {
-  flex: 1;
-  min-width: 0;
+  flex: 1; min-width: 0;
   background: #111827;
   border: 1px solid #1f2937;
   border-radius: 8px;
@@ -268,48 +321,34 @@
   flex-shrink: 0;
 }
 
-/* ── Pricing card ── */
-.pf-pricing {
-  background: rgba(255,255,255,0.02);
-}
+/* Pricing card */
+.pf-pricing { background: rgba(255,255,255,0.02); }
 .pf-pricing-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 5px 0;
 }
-.pf-pricing-label {
-  font-size: 13px;
-  color: #94a3b8;
-}
+.pf-pricing-label { font-size: 13px; color: #94a3b8; }
 .pf-pricing-val {
   font-size: 13px;
   font-weight: 600;
-  color: #ffffff;
+  color: #fff;
   font-family: var(--font-mono, monospace);
 }
-.pf-pricing-payout {
-  color: #22c55e;
-  font-size: 15px;
-}
-.pf-pricing-divider {
-  height: 1px;
-  background: #1f2937;
-  margin: 6px 0;
-}
-.green { color: #22c55e; }
+.pf-pricing-payout { color: #22c55e; font-size: 15px; }
+.pf-pricing-divider { height: 1px; background: #1f2937; margin: 6px 0; }
+.green { color: #22c55e !important; }
 
-/* Loading dot */
 .pf-loading-dot {
   display: inline-block;
-  width: 8px;
-  height: 8px;
+  width: 8px; height: 8px;
   background: #22c55e;
   border-radius: 50%;
   animation: pulse-dot 1s ease-in-out infinite;
 }
 
-/* ── Status messages ── */
+/* Messages */
 .pf-msg {
   margin: 0 16px;
   padding: 10px 14px;
@@ -318,25 +357,17 @@
   text-align: center;
   font-weight: 500;
 }
-.pf-msg--ok {
-  background: rgba(34,197,94,0.12);
-  border: 1px solid rgba(34,197,94,0.3);
-  color: #22c55e;
-}
-.pf-msg--err {
-  background: rgba(239,68,68,0.12);
-  border: 1px solid rgba(239,68,68,0.3);
-  color: #ef4444;
-}
+.pf-msg--ok { background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.3); color: #22c55e; }
+.pf-msg--err { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.3); color: #ef4444; }
 
-/* ── Buy button ── */
+/* Buy button */
 .pf-buy {
   width: 100%;
   min-height: 60px;
   background: var(--buy-color, #2563eb);
   border: none;
   border-radius: 12px;
-  color: #ffffff;
+  color: #fff;
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
@@ -349,38 +380,15 @@
   font-family: var(--font-body);
   padding: 10px 16px;
 }
-.pf-buy:hover:not(:disabled) {
-  filter: brightness(1.12);
-  transform: translateY(-1px);
-}
+.pf-buy:hover:not(:disabled) { filter: brightness(1.12); transform: translateY(-1px); }
 .pf-buy:active:not(:disabled) { transform: translateY(0); }
-.pf-buy:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  transform: none;
-}
-.pf-buy-text {
-  font-size: 17px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-}
-.pf-buy-payout {
-  font-size: 12px;
-  font-weight: 400;
-  opacity: 0.88;
-  font-family: var(--font-mono, monospace);
-}
-.pf-buy-spinner {
-  font-size: 15px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+.pf-buy:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+.pf-buy-text { font-size: 17px; font-weight: 800; letter-spacing: 0.5px; }
+.pf-buy-payout { font-size: 12px; font-weight: 400; opacity: 0.9; font-family: var(--font-mono, monospace); }
+.pf-buy-spinner { font-size: 15px; display: flex; align-items: center; gap: 8px; }
 
-/* ── Contract summary ── */
-.pf-summary {
-  background: rgba(255,255,255,0.02);
-}
+/* Summary */
+.pf-summary { background: rgba(255,255,255,0.02); }
 .pf-summary-row {
   display: flex;
   justify-content: space-between;
@@ -389,17 +397,13 @@
   font-size: 12px;
   color: #94a3b8;
 }
-.pf-summary-row span:last-child {
-  color: #ffffff;
-  font-weight: 500;
-  font-family: var(--font-mono, monospace);
-}
-.pf-summary-row .green { color: #22c55e; }
+.pf-summary-row span:last-child { color: #fff; font-weight: 500; font-family: var(--font-mono, monospace); }
 
-/* ── Responsive ── */
+/* Responsive */
 @media (max-width: 375px) {
   .pf-type-grid { grid-template-columns: repeat(3, 1fr); }
   .pf-digit-grid { gap: 4px; }
   .pf-digit { min-height: 52px; }
-  .pf-digit-n { font-size: 16px; }
+  .pf-digit-n { font-size: 15px; }
+  .pf-digit-p { font-size: 9px; }
 }
